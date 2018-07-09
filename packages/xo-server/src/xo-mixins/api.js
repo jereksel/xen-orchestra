@@ -273,9 +273,11 @@ export default class Api {
 
       const resolvedParams = await resolveParams.call(context, method, params)
 
+      this._xo.emit('pre call', name, params)
+
       let result = await method.call(context, resolvedParams)
 
-      this._xo.emit('call', name, params)
+      this._xo.emit('post call', name, params, result)
 
       // If nothing was returned, consider this operation a success
       // and return true.

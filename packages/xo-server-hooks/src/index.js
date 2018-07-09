@@ -1,12 +1,13 @@
 import request from 'http-request-plus'
-import { groupBy } from 'lodash'
+import { groupBy, mapValues } from 'lodash'
 
-const makeRequest = (url, method, params) =>
-  request(url, {
-    body: JSON.stringify({ method, params }),
+const makeRequest = (url, method, params, type, result) => {
+  return request(url, {
+    body: JSON.stringify({ method, params, type, result }),
     headers: { 'content-type': 'application/json' },
     method: 'POST',
   })
+}
 
 class XoServerHooks {
   constructor ({ xo }) {
@@ -15,27 +16,37 @@ class XoServerHooks {
     // Defined in configure().
     this._conf = null
     this._key = null
-    this.handleHook = this.handleHook.bind(this)
+    this.handlePreHook = (...args) => this.handleHook('pre', ...args)
+    this.handlePostHook = (...args) => this.handleHook('post', ...args)
   }
 
   configure (configuration) {
-    this._conf = groupBy(configuration, 'method')
+    this._conf = mapValues(groupBy(configuration, 'method'), _ =>
+      groupBy(_, 'type')
+    )
   }
 
-  handleHook (method, params) {
+  handleHook (type, method, params, result) {
     let hooks
-    if ((hooks = this._conf[method]) === undefined) {
+    if (
+      (hooks = this._conf[method]) === undefined ||
+      (hooks = hooks[type]) === undefined
+    ) {
       return
     }
-    return Promise.all(hooks.map(({ url }) => makeRequest(url, method, params)))
+    return Promise.all(
+      hooks.map(({ url }) => makeRequest(url, method, params, type, result))
+    )
   }
 
   load () {
-    this._xo.on('call', this.handleHook)
+    this._xo.on('pre call', this.handlePreHook)
+    this._xo.on('post call', this.handlePostHook)
   }
 
   unload () {
-    this._xo.removeListener('call', this.handleHook)
+    this._xo.removeListener('pre call', this.handlePreHook)
+    this._xo.removeListener('post call', this.handlePostHook)
   }
 
   test ({ url }) {
@@ -52,8 +63,15 @@ export const configurationSchema = ({ xo: { apiMethods } }) => ({
     properties: {
       method: {
         description: 'The method to be bound to',
-        enum: Object.keys(apiMethods),
+        enum: Object.keys(apiMethods).sort(),
         title: 'Method',
+        type: 'string',
+      },
+      type: {
+        description:
+          'Right before the API call *or* right after the action has been completed',
+        enum: ['pre', 'post'],
+        title: 'Type',
         type: 'string',
       },
       url: {
@@ -62,7 +80,7 @@ export const configurationSchema = ({ xo: { apiMethods } }) => ({
         type: 'string',
       },
     },
-    required: ['method', 'url'],
+    required: ['method', 'type', 'url'],
   },
 })
 
