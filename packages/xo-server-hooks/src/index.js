@@ -1,16 +1,16 @@
 import request from 'http-request-plus'
 import { groupBy, mapValues } from 'lodash'
 
-const makeRequest = (url, method, params, type, result) => {
+const makeRequest = (url, type, data) => {
   return request(url, {
-    body: JSON.stringify({ method, params, type, result }),
+    body: JSON.stringify({ ...data, type }),
     headers: { 'content-type': 'application/json' },
     method: 'POST',
   })
 }
 
 class XoServerHooks {
-  constructor ({ xo }) {
+  constructor({ xo }) {
     this._xo = xo
 
     // Defined in configure().
@@ -20,37 +20,40 @@ class XoServerHooks {
     this.handlePostHook = (...args) => this.handleHook('post', ...args)
   }
 
-  configure (configuration) {
+  configure(configuration) {
     this._conf = mapValues(groupBy(configuration, 'method'), _ =>
       groupBy(_, 'type')
     )
   }
 
-  handleHook (type, method, params, result) {
+  handleHook(type, data) {
     let hooks
     if (
-      (hooks = this._conf[method]) === undefined ||
+      (hooks = this._conf[data.method]) === undefined ||
       (hooks = hooks[type]) === undefined
     ) {
       return
     }
-    return Promise.all(
-      hooks.map(({ url }) => makeRequest(url, method, params, type, result))
-    )
+    return Promise.all(hooks.map(({ url }) => makeRequest(url, type, data)))
   }
 
-  load () {
-    this._xo.on('pre call', this.handlePreHook)
-    this._xo.on('post call', this.handlePostHook)
+  load() {
+    this._xo.on('xo:preCall', this.handlePreHook)
+    this._xo.on('xo:postCall', this.handlePostHook)
   }
 
-  unload () {
-    this._xo.removeListener('pre call', this.handlePreHook)
-    this._xo.removeListener('post call', this.handlePostHook)
+  unload() {
+    this._xo.removeListener('xo:preCall', this.handlePreHook)
+    this._xo.removeListener('xo:postCall', this.handlePostHook)
   }
 
-  test ({ url }) {
-    return makeRequest(url, 'vm.start', { id: 'foobar' })
+  test({ url }) {
+    return makeRequest(url, 'pre', {
+      callId: '0',
+      userId: '0',
+      method: 'vm.start',
+      params: { id: 'foobar' },
+    })
   }
 }
 

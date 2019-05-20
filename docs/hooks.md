@@ -27,10 +27,12 @@ Body:
 
 ```json
 {
-  "method": <method name>,
-  "params": <call parameters>,
   "type": "pre"|"post",
-  "result": <call result if post type>
+  "callId": <unique ID for this call to help match a pre-call and a post-call>,
+  "method": <method name>,
+  "params": <call parameters (JSON)>,
+  "result": <call result if post type on success (JSON)>,
+  "error": <call result if post type on error (JSON)>,
 }
 ```
 
@@ -54,10 +56,10 @@ http
   .listen(3000)
 
 const handleHook = data => {
-  const { method, params, type, result } = JSON.parse(data)
+  const { method, params, type, result, error } = JSON.parse(data)
 
   // Log it
-  console.log(`${Date.now()} [${method}|${type}] ${params} → ${result}`)
+  console.log(`${Date.now()} [${method}|${type}] ${params} → ${result || error}`)
 
   // Run scripts
   exec(`./hook-scripts/${method}-${type}.sh`)
