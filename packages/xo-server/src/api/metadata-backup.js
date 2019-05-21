@@ -13,6 +13,10 @@ createJob.params = {
     type: 'object',
     optional: true,
   },
+  proxyId: {
+    type: 'string',
+    optional: true,
+  },
   remotes: {
     type: 'object',
   },
@@ -71,6 +75,10 @@ editJob.params = {
   },
   pools: {
     type: ['object', 'null'],
+    optional: true,
+  },
+  proxyId: {
+    type: ['string', 'null'],
     optional: true,
   },
   settings: {
