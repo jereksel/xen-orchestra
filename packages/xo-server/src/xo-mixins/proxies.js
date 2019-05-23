@@ -2,7 +2,6 @@ import { noSuchObject } from 'xo-common/api-errors'
 
 import Collection from '../collection/redis'
 import patch from '../patch'
-import { mapToArray } from '../utils'
 
 export default class Proxy {
   constructor(app) {
@@ -16,7 +15,7 @@ export default class Proxy {
       app.addConfigManager(
         'proxies',
         () => db.get(),
-        proxies => Promise.all(mapToArray(proxies, proxy => db.update(proxy)))
+        proxies => db.update(proxies)
       )
     )
   }
