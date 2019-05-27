@@ -1,13 +1,5 @@
 # xo-server-hooks [![Build Status](https://travis-ci.org/vatesfr/xen-orchestra.png?branch=master)](https://travis-ci.org/vatesfr/xen-orchestra)
 
-## Install
-
-Installation of the [npm package](https://npmjs.org/package/xo-server-hooks):
-
-```
-> npm install --global xo-server-hooks
-```
-
 ## Usage
 
 Like all other xo-server plugins, it can be configured directly via
