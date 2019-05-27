@@ -507,12 +507,9 @@ const disableVmHighAvailability = async (xapi: Xapi, vm: Vm) => {
 // │  │  ├─ task.start(message: 'transfer')
 // │  │  │  ├─ task.warning(message: string)
 // │  │  │  └─ task.end(result: { size: number })
-// │  │  ├─ task.start(message: 'merge')
+// │  │  ├─ task.start(message: type === full ? 'clean' : 'merge')
 // │  │  │  ├─ task.warning(message: string)
-// │  │  │  └─ task.end(result: { size: number })
-// │  │  ├─ task.start(message: 'clean')
-// │  │  │  ├─ task.warning(message: string)
-// │  │  │  └─ task.end
+// │  │  │  └─ task.end(result?: { size: number })
 // │  │  └─ task.end
 // │  └─ task.end
 // └─ job.end
