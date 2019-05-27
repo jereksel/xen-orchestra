@@ -1418,7 +1418,6 @@ const messages = {
   firstBackupColumn: 'Oldest backup',
   lastBackupColumn: 'Latest backup',
   availableBackupsColumn: 'Available Backups',
-  sizeBackupColumn: 'Size',
   backupRestoreErrorTitle: 'Missing parameters',
   backupRestoreErrorMessage: 'Choose a SR and a backup',
   importBackupTitle: 'Import VM',
