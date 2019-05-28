@@ -58,3 +58,21 @@ update.params = {
     optional: true,
   },
 }
+
+export function call({ id, method, params }) {
+  return this.callThroughProxy(id, method, params)
+}
+
+call.permission = 'admin'
+call.params = {
+  id: {
+    type: 'string',
+  },
+  method: {
+    type: 'string',
+  },
+  params: {
+    type: 'object',
+    optional: true,
+  },
+}

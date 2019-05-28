@@ -19,6 +19,7 @@ const obfuscateRemote = ({ url, ...remote }) => {
 
 export default class {
   constructor(xo, { remoteOptions }) {
+    this._app = xo
     this._handlers = { __proto__: null }
     this._remoteOptions = remoteOptions
     this._remotes = new Remotes({
@@ -109,18 +110,29 @@ export default class {
   async getAllRemotesInfo() {
     const remotes = await this._remotes.get()
 
-    await asyncMap(remotes, async remote => {
+    const app = this._app
+    const remotesInfo = this._remotesInfo
+    await asyncMap(remotes, async ({ id, proxyId }) => {
+      if (proxyId !== undefined) {
+        return app
+          .callThroughProxy(proxyId, 'remote.getInfo', { id })
+          .then(info => {
+            remotesInfo[id] = info
+          })
+          ::ignoreErrors()
+      }
+
       try {
-        const handler = await this.getRemoteHandler(remote.id)
+        const handler = await this.getRemoteHandler(id)
         await timeout.call(
           handler.getInfo().then(info => {
-            this._remotesInfo[remote.id] = info
+            remotesInfo[id] = info
           }),
           5e3
         )
       } catch (_) {}
     })
-    return this._remotesInfo
+    return remotesInfo
   }
 
   async getAllRemotes() {
