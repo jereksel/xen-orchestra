@@ -1,5 +1,7 @@
 import hrp from 'http-request-plus'
+import split2 from 'split-2'
 import { format, parse } from 'json-rpc-peer'
+import { fromEvent } from 'promise-toolbox'
 import { noSuchObject } from 'xo-common/api-errors'
 
 import Collection from '../collection/redis'
@@ -80,38 +82,25 @@ export default class Proxy {
     // }
 
     const url = 'http://127.0.0.1'
-    return hrp
-      .post(url, {
-        body: format.request(0, method, params),
-        headers: {
-          'Content-Type': 'application/json',
-        },
+    const response = await hrp.post(url, {
+      body: format.request(0, method, params),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+
+    const lines = pipeline(response, split2())
+    const firstLine = String(await fromEvent(lines, 'data'))
+    const { result } = parse(firstLine)
+    if (result?.$responseType === 'ndjson') {
+      const collection = []
+      await parseNdJson(lines, item => {
+        collection.push(item)
       })
-      .then(
-        res =>
-          new Promise((resolve, reject) => {
-            const collection = []
-            let consumed = false
-            res.on('data', data => {
-              if (!consumed) {
-                consumed = true
-                const { result } = parse(String(data))
-                if (result.$responseType !== 'ndjson') {
-                  resolve(result)
-                }
-                return
-              }
-              parseNdJson(data, item => {
-                collection.push(item)
-              })
-            })
-            res.on('error', error => {
-              reject(error)
-            })
-            res.on('end', () => {
-              resolve(collection)
-            })
-          })
-      )
+      return collection
+    } else {
+      lines.destroy()
+      return result
+    }
   }
 }
