@@ -20,8 +20,23 @@ export default class Proxy {
     )
   }
 
-  registerProxyAppliance(appliance) {
-    return this._db.add(appliance).then(({ properties }) => properties)
+  async registerProxyAppliance({ address, authenticationToken, name }) {
+    const proxies = await this.getAllProxies()
+    const proxy = proxies.find(proxy => proxy.address === address)
+    if (proxy !== undefined) {
+      throw new Error(
+        `A proxy (${proxy.id}) with the address (${
+          proxy.address
+        }) is already registered.`
+      )
+    }
+
+    const { properties } = await this._db.add({
+      address,
+      authenticationToken,
+      name,
+    })
+    return properties
   }
 
   unRegisterProxyAppliance(id) {
@@ -40,9 +55,10 @@ export default class Proxy {
     return this._db.get()
   }
 
-  async updateProxy(id, props) {
+  async updateProxy(id, { address, authenticationToken, name }) {
     const proxy = await this.getProxy(id)
-    patch(proxy, props)
-    return this._db.update(proxy).then(({ properties }) => properties)
+    patch(proxy, { address, authenticationToken, name })
+    const { properties } = await this._db.update(proxy)
+    return properties
   }
 }

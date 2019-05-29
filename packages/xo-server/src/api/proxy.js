@@ -11,7 +11,7 @@ registerAppliance.params = {
     type: 'string',
     optional: true,
   },
-  token: {
+  authenticationToken: {
     type: 'string',
   },
 }
@@ -61,7 +61,7 @@ update.params = {
     type: 'string',
     optional: true,
   },
-  token: {
+  authenticationToken: {
     type: 'string',
     optional: true,
   },
