@@ -4,10 +4,14 @@ export function registerAppliance(appliance) {
 
 registerAppliance.permission = 'admin'
 registerAppliance.params = {
-  name: {
+  address: {
     type: 'string',
   },
-  vmUuid: {
+  name: {
+    type: 'string',
+    optional: true,
+  },
+  token: {
     type: 'string',
   },
 }
@@ -49,11 +53,15 @@ update.params = {
   id: {
     type: 'string',
   },
+  address: {
+    type: 'string',
+    optional: true,
+  },
   name: {
     type: 'string',
     optional: true,
   },
-  vmUuid: {
+  token: {
     type: 'string',
     optional: true,
   },
