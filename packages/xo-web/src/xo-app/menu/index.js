@@ -253,7 +253,7 @@ export default class Menu extends Component {
           },
         ],
       },
-      {
+      false && {
         to: isAdmin ? 'xoa/update' : 'xoa/notifications',
         icon: 'menu-xoa',
         label: 'xoa',
@@ -361,7 +361,7 @@ export default class Menu extends Component {
         label: 'taskMenu',
         pill: nTasks,
       },
-      isAdmin && { to: '/xosan', icon: 'menu-xosan', label: 'xosan' },
+      isAdmin && false && { to: '/xosan', icon: 'menu-xosan', label: 'xosan' },
       !(noOperatablePools && noResourceSets) && {
         to: '/vms/new',
         icon: 'menu-new',
@@ -429,7 +429,7 @@ export default class Menu extends Component {
                 style={{ display: 'flex' }}
                 to='/about'
               >
-                {+process.env.XOA_PLAN === 5 ? (
+                {(+process.env.XOA_PLAN === 5 && false) ? (
                   <span>
                     <span
                       className={classNames(

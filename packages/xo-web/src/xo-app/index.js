@@ -222,7 +222,7 @@ export default class XoApp extends Component {
                   </Link>
                 </div>
               )}
-              {+process.env.XOA_PLAN === 5 && (
+              {+process.env.XOA_PLAN === 5 && false && (
                 <div className='alert alert-danger mb-0'>
                   <a
                     href='https://xen-orchestra.com/#!/xoa?pk_campaign=xo_source_banner'

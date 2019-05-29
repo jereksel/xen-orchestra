@@ -301,7 +301,7 @@ export default class NewXosan extends Component {
   }
 
   render() {
-    if (+process.env.XOA_PLAN === 5) {
+    if (+process.env.XOA_PLAN === 5 && false) {
       return (
         <em>
           {_('xosanSourcesDisclaimer', {

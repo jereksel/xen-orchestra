@@ -41,7 +41,7 @@ const Xoa = routes('xoa', {
   licenses: Licenses,
   notifications: Notifications,
 })(({ children }) =>
-  +process.env.XOA_PLAN === 5 ? (
+  (+process.env.XOA_PLAN === 5 && false) ? (
     <Container>
       <h2 className='text-danger'>{_('noUpdaterCommunity')}</h2>
       <p>

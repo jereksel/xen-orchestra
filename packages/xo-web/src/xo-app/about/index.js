@@ -65,7 +65,7 @@ export default class About extends Component {
           {process.env.XOA_PLAN > 4 ? (
             <div>
               <Row>
-                <Col>
+                {/* <Col>
                   <h2 className='text-danger'>{_('noProSupport')}</h2>
                   <h4 className='text-danger'>{_('noProductionUse')}</h4>
                   <p className='text-muted'>
@@ -77,7 +77,7 @@ export default class About extends Component {
                       ),
                     })}
                   </p>
-                </Col>
+                </Col> */}
               </Row>
               <Row>
                 <Col mediumSize={6}>
